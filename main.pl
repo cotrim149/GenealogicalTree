@@ -56,7 +56,7 @@ definePerson(Name,Gender):-
   (Gender = man , assert(man(Name)));
   (Gender = woman , assert(woman(Name))).
 
-defineMother(Name,Person):-
-  (man(Person);woman(Person)),
+defineMother(Name,Son):-
+  (man(Son);woman(Son)),
   assert(woman(Name)),
-  assert(progenitor(Name,Person)).
+  assert(progenitor(Name,Son)).
