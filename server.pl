@@ -42,6 +42,8 @@ genealogicalTree(_Request) :-
 % enable json use
 :- multifile http_json/1.
 
+:- use_module(library(http/http_header)).
+
 % adding mime types
 http_json:json_type('application/x-javascript').
 http_json:json_type('text/javascript').
@@ -59,6 +61,20 @@ http_json:json_type('text/x-json').
 jsonHandle(_Request):-
   prolog_to_json(circle(coord(3.4, 5.6)), JSON_Object),
   reply_json(JSON_Object).
+  % http_reply_file('main.pl', [], []).
+  % http_post([ protocol(http),
+  %           host(Host),
+  %           port(8000),
+  %           path(ActionPath)
+  %         ],
+  %         form_data([ repository = Repository,
+  %                     dataFormat = DataFormat,
+  %                     baseURI    = BaseURI,
+  %                     verifyData = Verify,
+  %                     data       = file(File)
+  %                   ]),
+  %         _Reply,
+  %         []).
 
 % json tests
 test(JSON_Object):-
