@@ -57,19 +57,20 @@ definePerson(Name,Gender):-
   (Gender = woman , assert(woman(Name))).
 
 defineMother(Name,Son):-
-  (man(Son);woman(Son)),
+  (man(Person);woman(Person)),
   assert(woman(Name)),
   assert(progenitor(Name,Son)).
 
 defineFather(Name,Son):-
-  (man(Son);woman(Son)),
+  (man(Person);woman(Person)),
   assert(man(Name)),
   assert(progenitor(Name,Son)).
 
-defineAunt(Name,Nephew):-
-  (man(Nephew);woman(Nephew)),
-  assert(woman(name)),
-  assert(progenitor()).
+%defineSister(Name,Brother):-
+%  (man(Person),woman(Person)),
+%  assert(woman(Name)),
+%  assert(progenitor(mother(_,Brother),Son)),
+%  assert(progenitor(father(_,Brother),Son)).
 
 % Saving the dynamic database with all predicates
 
