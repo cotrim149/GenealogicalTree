@@ -1,24 +1,3 @@
-% woman(eliane).
-% woman(fernanda).
-% woman(ester).
-% woman(terezinha).
-%
-% man(albino).
-% man(cotrim).
-% man(nicolas).
-% man(gustavo).
-% man(elias).
-%
-% progenitor(albino,cotrim).
-% progenitor(albino,fernanda).
-%
-% progenitor(eliane,cotrim).
-% progenitor(eliane,nicolas).
-% progenitor(eliane,gustavo).
-%
-% progenitor(terezinha,ester).
-% progenitor(terezinha,eliane).
-% progenitor(terezinha,elias).
 :- dynamic male/1.
 :- dynamic female/1.
 :- dynamic parent/2.
@@ -68,28 +47,40 @@ grandFather(GrandFather,Person) :-
 % Database defining rules
 
 definePerson(Name, Gender) :-
-  (Gender = male, assert(male(Name)),!);
-  (Gender = female, assert(female(Name)),!).
-
-defineMother(Name, Son) :-
-  (male(Son); female(Son)),
   ( % if Name is alredy in Database just verify
     (
       (male(Name);female(Name)),
       write('Person alredy defined!'),nl
     );
     % else Name is not, add it to Database
-    (assert(female(Name)),write('Person defined!'),nl)
-  ),
-  (
-    (parent(Name,Son),write('Mother alredy defined!'),nl);
-    (assert(parent(Name, Son)),write('Mother defined!'),nl)
+    (
+      (Gender = male, assert(male(Name)));
+      (Gender = female, assert(female(Name))),
+      write('Person defined!'),nl
+    )
   ),!.
+
+defineParent(Parent,Son):-
+  (
+    (
+      parent(Parent,Son),
+      write('Parent alredy defined!'),nl
+    );
+    (
+      assert(parent(Parent, Son)),
+      write('Parent defined!'),nl
+    )
+  ),!.
+
+defineMother(Name, Son) :-
+  (male(Son); female(Son)),
+  definePerson(Name,female),
+  defineParent(Name,Son),!.
 
 defineFather(Name, Son) :-
   (male(Son); female(Son)),
-  assert(male(Name)),
-  assert(parent(Name, Son)).
+  definePerson(Name,male),
+  defineParent(Name,Son),!.
 
 % Saving the dynamic database with all predicates
 
