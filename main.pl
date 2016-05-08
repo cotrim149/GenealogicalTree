@@ -23,14 +23,17 @@ half_sibling(X, Y) :-
   parent(Z, Y),
   X \= Y.
 
-uncle(X,Y) :-
-  parent(Z,Y), brother(X,Z).
+uncle(Uncle, Person) :-
+  male(Uncle), parent(Brother, Person), brother(Uncle, Brother).
 
-aunt(X,Y) :-
-  parent(Z,Y), sister(X,Z).
+aunt(Aunt, Person) :-
+  female(Aunt), parent(Brother, Person), sister(Aunt, Brother).
 
-aunt(X, Y) :- female(X), sibling(X, Z), parent(Z, Y).
-aunt(X, Y) :- female(X), spouse(X, W), sibling(W, Z), parent(Z, Y).
+uncleNotSameBlood(Uncle, Person) :-
+  female(Uncle), spouse(Uncle, Spouse), full_siblings(Brother, Parent), parent(Parent, Person).
+
+auntNotSameBlood(Aunt, Person) :-
+  female(Aunt), spouse(Aunt, Spouse), full_siblings(Brother, Parent), parent(Parent, Person).
 
 grandparent(C,D) :- parent(C,E), parent(E,D).
 
@@ -81,6 +84,16 @@ defineFather(Name, Son) :-
   (male(Son); female(Son)),
   definePerson(Name,male),
   defineParent(Name,Son),!.
+
+defineNotSameBloodAunt(NameOne, NameTwo) :-
+  (male(NameTwo); female(NameTwo)),
+  assert(female(NameOne)),
+  assert(spouse(NameOne, NameTwo)).
+
+defineNotSameBloodUncle(NameOne, NameTwo) :-
+  (male(NameTwo); female(NameTwo)),
+  assert(male(NameOne)),
+  assert(spouse(NameOne, NameTwo)).
 
 % Saving the dynamic database with all predicates
 
