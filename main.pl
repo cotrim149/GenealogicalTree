@@ -58,16 +58,36 @@ auntNotSameBlood(Aunt, Person) :-
 
 grandparent(C,D) :- parent(C,E), parent(E,D).
 
+grandMother(GrandMother,Person) :-
+  female(GrandMother),
+  (female(Person);male(Person)),
+  grandparent(GrandMother,Person).
+
+grandFather(GrandFather,Person) :-
+  male(GrandFather),
+  (female(Person);male(Person)),
+  grandparent(GrandFather,Person).
+
 % Database defining rules
 
 definePerson(Name, Gender) :-
-  (Gender = male, assert(male(Name)));
-  (Gender = female, assert(female(Name))).
+  (Gender = male, assert(male(Name)),!);
+  (Gender = female, assert(female(Name)),!).
 
 defineMother(Name, Son) :-
   (male(Son); female(Son)),
-  assert(female(Name)),
-  assert(parent(Name, Son)).
+  ( % if Name is alredy in Database just verify
+    (
+      (male(Name);female(Name)),
+      write('Person alredy defined!'),nl
+    );
+    % else Name is not, add it to Database
+    (assert(female(Name)),write('Person defined!'),nl)
+  ),
+  (
+    (parent(Name,Son),write('Mother alredy defined!'),nl);
+    (assert(parent(Name, Son)),write('Mother defined!'),nl)
+  ),!.
 
 defineFather(Name, Son) :-
   (male(Son); female(Son)),
@@ -92,6 +112,30 @@ save_data:-
   listing(female),
   listing(parent),
   told.
+
+% Load data to a dynamic database
+readFile(File,_):-
+  read(File,Line),
+  (
+    ( % if Head of List splitted are ":" than do nothing
+      format(atom(FormattedLine),"~w",Line),
+      split_string(FormattedLine,' -','',[Head|Tail]),
+      Head = ":"
+    );
+    ( % else load data into assert with line information
+      asserta(Line)
+    )
+  ),
+  (
+    (Line \= end_of_file, readFile(File,Line));
+    (Line = end_of_file)
+  ),!.
+
+load_data:-
+  open('genealogicalData.txt',read,File),
+  readFile(File,_),nl,
+  write('File load with success!'),
+  close(File).
 
 % Saving the dynamic database with lists
 
