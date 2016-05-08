@@ -73,14 +73,23 @@ definePerson(Name, Gender) :-
 
 defineMother(Name, Son) :-
   (male(Son); female(Son)),
-  assert(female(Name)),
-  assert(parent(Name, Son)),!.
+  ( % if Name is alredy in Database just verify
+    (
+      (male(Name);female(Name)),
+      write('Person alredy defined!'),nl
+    );
+    % else Name is not, add it to Database
+    (assert(female(Name)),write('Person defined!'),nl)
+  ),
+  (
+    (parent(Name,Son),write('Mother alredy defined!'),nl);
+    (assert(parent(Name, Son)),write('Mother defined!'),nl)
+  ),!.
 
 defineFather(Name, Son) :-
   (male(Son); female(Son)),
   assert(male(Name)),
   assert(parent(Name, Son)).
-
 
 % Saving the dynamic database with all predicates
 
