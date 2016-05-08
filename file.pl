@@ -4,6 +4,7 @@ save_data:-
   listing(male),
   listing(female),
   listing(parent),
+  listing(spouse),
   told.
 
 % Load data to a dynamic database
