@@ -75,9 +75,9 @@ defineFather(Name, Son) :-
 
 save_data:-
   tell('genealogicalData.txt'),
-  listing(man),
-  listing(woman),
-  listing(progenitor),
+  listing(male),
+  listing(female),
+  listing(parent),
   told.
 
 % Saving the dynamic database with lists
