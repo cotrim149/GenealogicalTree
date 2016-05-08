@@ -55,21 +55,32 @@ aunt(X, Y) :- female(X), spouse(X, W), sibling(W, Z), parent(Z, Y).
 
 grandparent(C,D) :- parent(C,E), parent(E,D).
 
+grandMother(GrandMother,Person) :-
+  female(GrandMother),
+  (female(Person);male(Person)),
+  grandparent(GrandMother,Person).
+
+grandFather(GrandFather,Person) :-
+  male(GrandFather),
+  (female(Person);male(Person)),
+  grandparent(GrandFather,Person).
+
 % Database defining rules
 
 definePerson(Name, Gender) :-
-  (Gender = male, assert(male(Name)));
-  (Gender = female, assert(female(Name))).
+  (Gender = male, assert(male(Name)),!);
+  (Gender = female, assert(female(Name)),!).
 
 defineMother(Name, Son) :-
   (male(Son); female(Son)),
   assert(female(Name)),
-  assert(parent(Name, Son)).
+  assert(parent(Name, Son)),!.
 
 defineFather(Name, Son) :-
   (male(Son); female(Son)),
   assert(male(Name)),
   assert(parent(Name, Son)).
+
 
 % Saving the dynamic database with all predicates
 
@@ -93,7 +104,6 @@ readFile(File,_):-
       asserta(Line)
     )
   ),
-  nl,
   (
     (Line \= end_of_file, readFile(File,Line));
     (Line = end_of_file)
