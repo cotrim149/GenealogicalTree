@@ -19,58 +19,57 @@
 % progenitor(terezinha,ester).
 % progenitor(terezinha,eliane).
 % progenitor(terezinha,elias).
-:- dynamic man/1.
-:- dynamic woman/1.
-:- dynamic progenitor/2.
+:- dynamic male/1.
+:- dynamic female/1.
+:- dynamic parent/2.
 
-mother(Mother,Son):- woman(Mother),progenitor(Mother,Son).
-father(Father,Son):- man(Father),progenitor(Father,Son).
+father(NameFather, NameTwo) :- male(NameFather), parent(NameFather, NameTwo).
+mother(NameMother, NameTwo) :- female(NameMother), parent(NameMother, NameTwo).
 
-brother(Man1,Man2):- man(Man1),
-  progenitor(Progenitor,Man1) , progenitor(Progenitor,Man2),
-  (man(Progenitor); woman(Progenitor)).
+full_siblings(NameOne, NameTwo) :-
+  parent(Father, NameOne), parent(Father, NameTwo),
+  parent(Mother, NameOne), parent(Mother, NameTwo),
+  NameOne \= NameTwo, Father \= Mother.
 
-sister(Woman,Person):- woman(Woman),
-  progenitor(Progenitor,Woman) , progenitor(Progenitor,Person),
-  (man(Progenitor); woman(Progenitor)).
+sister(X, Y) :-
+  full_siblings(X, Y),
+  female(X).
 
-aunt(Woman,Person):- woman(Woman),
-  (
-    mother(Mother,Person),sister(Woman,Mother)
-  );
-  (
-    father(Father,Person),sister(Woman,Father)
-  ).
+brother(X, Y) :-
+  full_siblings(X, Y),
+  male(X).
 
-uncle(Man,Person):- man(Man),
-(
-  mother(Mother,Person),brother(Man,Mother)
-);
-(
-  father(Father,Person),brother(Man,Father)
-).
+half_sibling(X, Y) :-
+  parent(Z, X),
+  parent(Z, Y),
+  X \= Y.
+
+uncle(X,Y) :-
+  parent(Z,Y), brother(X,Z).
+
+aunt(X,Y) :-
+  parent(Z,Y), sister(X,Z).
+
+aunt(X, Y) :- female(X), sibling(X, Z), parent(Z, Y).
+aunt(X, Y) :- female(X), spouse(X, W), sibling(W, Z), parent(Z, Y).
+
+grandparent(C,D) :- parent(C,E), parent(E,D).
 
 % Database defining rules
 
-definePerson(Name,Gender):-
-  (Gender = man , assert(man(Name)));
-  (Gender = woman , assert(woman(Name))).
+definePerson(Name, Gender) :-
+  (Gender = male, assert(male(Name)));
+  (Gender = female, assert(female(Name))).
 
-defineMother(Name,Son):-
-  (man(Person);woman(Person)),
-  assert(woman(Name)),
-  assert(progenitor(Name,Son)).
+defineMother(Name, Son) :-
+  (male(Son); female(Son)),
+  assert(female(Name)),
+  assert(parent(Name, Son)).
 
-defineFather(Name,Son):-
-  (man(Person);woman(Person)),
-  assert(man(Name)),
-  assert(progenitor(Name,Son)).
-
-%defineSister(Name,Brother):-
-%  (man(Person),woman(Person)),
-%  assert(woman(Name)),
-%  assert(progenitor(mother(_,Brother),Son)),
-%  assert(progenitor(father(_,Brother),Son)).
+defineFather(Name, Son) :-
+  (male(Son); female(Son)),
+  assert(male(Name)),
+  assert(parent(Name, Son)).
 
 % Saving the dynamic database with all predicates
 
