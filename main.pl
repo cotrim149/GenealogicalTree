@@ -1,6 +1,7 @@
 :- dynamic male/1.
 :- dynamic female/1.
 :- dynamic parent/2.
+:- dynamic spouse/2.
 :- consult('file.pl').
 
 father(NameFather, NameTwo) :- male(NameFather), parent(NameFather, NameTwo).
@@ -54,13 +55,13 @@ definePerson(Name, Gender) :-
   ( % if Name is alredy in Database just verify
     (
       (male(Name);female(Name)),
-      write('Person alredy defined!'),nl
+      write(Name),write(' alredy defined!'),nl
     );
     % else Name is not, add it to Database
     (
       (Gender = male, assert(male(Name)));
       (Gender = female, assert(female(Name))),
-      write('Person defined!'),nl
+      write(Name),write(' defined!'),nl
     )
   ),!.
 
@@ -76,6 +77,16 @@ defineParent(Parent,Son):-
     )
   ),!.
 
+defineSpouse(NameOne,NameTwo):-
+  (
+    spouse(NameOne,NameTwo),
+    write(NameOne),write(' alredy have spouse:'),write(NameTwo),nl
+  );
+  (
+    assert(spouse(NameOne, NameTwo)),
+    write(NameOne),write(' maried with: '), write(NameTwo),nl
+  ).
+
 defineMother(Name, Son) :-
   (male(Son); female(Son)),
   definePerson(Name,female),
@@ -88,10 +99,10 @@ defineFather(Name, Son) :-
 
 defineNotSameBloodAunt(NameOne, NameTwo) :-
   (male(NameTwo); female(NameTwo)),
-  assert(female(NameOne)),
-  assert(spouse(NameOne, NameTwo)).
+  definePerson(NameOne,female),
+  defineSpouse(NameOne,NameTwo),!.
 
 defineNotSameBloodUncle(NameOne, NameTwo) :-
   (male(NameTwo); female(NameTwo)),
-  assert(male(NameOne)),
-  assert(spouse(NameOne, NameTwo)).
+  definePerson(NameOne,male),
+  defineSpouse(NameOne,NameTwo),!.
