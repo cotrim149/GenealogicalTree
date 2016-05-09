@@ -49,6 +49,34 @@ grandFather(GrandFather,Person) :-
   (female(Person);male(Person)),
   grandparent(GrandFather,Person).
 
+cousin(Cousin,Person):-
+  (male(Person);female(Person)),
+  (
+    ( % brother of my father
+      father(Uncle,Cousin),
+      (brother(Uncle,Dad);brother(Dad,Uncle)),
+      father(Dad,Person)
+
+    );
+    ( % sister of my father
+      mother(Aunt,Cousin),
+      (sister(Aunt,Dad);brother(Dad,Aunt)),
+      father(Dad,Person)
+    )
+  );
+  (
+    ( % brother of my mother
+      father(Uncle,Cousin),
+      (brother(Uncle,Mother);sister(Mother,Uncle)),
+      mother(Mother,Person)
+
+    );
+    ( % sister of my mother
+      mother(Aunt,Cousin),
+      (sister(Aunt,Mother);sister(Mother,Aunt)),
+      mother(Mother,Person)
+    )
+  ),!.
 % Database defining rules
 
 definePerson(Name, Gender) :-
